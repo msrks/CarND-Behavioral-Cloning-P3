@@ -1,15 +1,14 @@
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Flatten, Lambda
-from keras.layers import Convolution2D, BatchNormalization
+from keras.layers import Convolution2D, BatchNormalization, Cropping2D
 from keras.optimizers import Adam
 
 from data_generator import d_train, d_valid, train_generator, validation_generator
 
-BATCH_SIZE = 128
-NUM_EPOCHS = 7
-NROWS = 128
-NCOLS = 128
-ch, row, col = 3, 160, 320
+BATCH_SIZE = 192
+NUM_EPOCHS = 10
+NROWS = 160
+NCOLS = 320
 
 ###################################
 # train CNN (NVIDIA model)
@@ -19,8 +18,9 @@ ch, row, col = 3, 160, 320
 ###################################
 model = Sequential()
 model.add(Lambda(lambda x: x/127.5 - 1.,
-        input_shape=(row, col, ch),
-        output_shape=(row, col, ch)))
+        input_shape=(NROWS, NCOLS, 3),
+        output_shape=(NROWS, NCOLS, 3)))
+model.add(Cropping2D(cropping=((50,20), (0,0))))
 #model.add(BatchNormalization(epsilon=0.001, mode=2,
 #                             axis=1, input_shape=(3, NROWS, NCOLS)))
 model.add(Convolution2D(24, 5, 5, border_mode='valid',
@@ -43,13 +43,12 @@ model.add(Dense(1, activation='tanh'))
 model.summary()
 
 model.compile(loss='mse',
-              optimizer=Adam(lr=0.0001),
-              metrics=['accuracy'])
+              optimizer=Adam(lr=0.0001))
 history = model.fit_generator(train_generator,
-                                samples_per_epoch= len(d_train),
+                                steps_per_epoch= int(len(d_train)/BATCH_SIZE*6),
                                 validation_data=validation_generator,
-                                nb_val_samples=len(d_valid),
-                                nb_epoch=2)
+                                validation_steps=int(len(d_valid)/BATCH_SIZE*6),
+                                epochs=NUM_EPOCHS, verbose=1)
 #history = model.fit(X_train, Y_train,
 #                    batch_size=BATCH_SIZE, nb_epoch=NUM_EPOCHS,
 #                    verbose=1, validation_data=(X_test, Y_test))
@@ -73,15 +72,6 @@ plot_model(model, to_file="fig/model_cnn.png", show_shapes=True, show_layer_name
 # visualize log
 ###################################
 import matplotlib.pyplot as plt
-
-fig = plt.figure()
-plt.plot(history.history['acc'],"o-",label="accuracy")
-plt.plot(history.history['val_acc'],"o-",label="val_acc")
-plt.title('model accuracy')
-plt.xlabel('epoch')
-plt.ylabel('accuracy')
-plt.legend(loc="lower right")
-fig.savefig("fig/acc.png")
 
 fig = plt.figure()
 plt.plot(history.history['loss'],"o-",label="loss",)

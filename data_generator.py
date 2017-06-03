@@ -5,28 +5,56 @@ https://classroom.udacity.com/nanodegrees/nd013/parts/fbf77062-5703-404e-b60c-95
 
 import numpy as np
 import pandas as pd
-import cv2
+from matplotlib.image import imread
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 
 df = pd.read_csv("driving_log.csv").values
 d_train, d_valid = train_test_split(df, test_size=0.2, random_state=2525)
 
-def generator(samples, batch_size=128):
+def generator(samples, batch_size=192):
     num_samples = len(samples)
+    correction = 0.2
     while True:
         shuffle(samples)
-        for offset in range(0, num_samples, batch_size):
+        for offset in range(0, num_samples, int(batch_size/6)):
             batch_samples = samples[offset:offset+batch_size]
 
             images = []
             angles = []
             for batch_sample in batch_samples:
+                # center image
                 name = './IMG/'+batch_sample[0].split('/')[-1]
-                center_image = cv2.imread(name)
+                center_image = imread(name)
                 center_angle = float(batch_sample[3])
                 images.append(center_image)
                 angles.append(center_angle)
+
+                images.append(np.fliplr(center_image))
+                angles.append(center_angle*(-1))
+
+                # left image
+                name = './IMG/'+batch_sample[1].split('/')[-1]
+                left_image = imread(name)
+                left_angle = float(batch_sample[3]) + correction
+                left_angle = np.clip(left_angle, -1., 1.)
+                images.append(left_image)
+                angles.append(left_angle)
+
+                images.append(np.fliplr(left_image))
+                angles.append(left_angle*(-1))
+
+                # right image
+                name = './IMG/'+batch_sample[2].split('/')[-1] 
+                right_image = imread(name)
+                right_angle = float(batch_sample[3]) - correction
+                right_angle = np.clip(right_angle, -1., 1.)
+                images.append(right_image)
+                angles.append(right_angle)
+
+                images.append(np.fliplr(right_image))
+                angles.append(right_angle*(-1))
+
 
             # trim image to only see section with road
             X_train = np.array(images)

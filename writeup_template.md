@@ -20,84 +20,70 @@ Using the Udacity provided simulator and my drive.py file, the car can be driven
 python drive.py model.h5
 ```
 
-
----
-
-
 ### Model Architecture and Training Strategy
 
-####1. An appropriate model architecture has been employed
+#### 1. model architecture
 
-My model consists of a convolution neural network with 3x3 filter sizes and depths between 32 and 128 (model.py lines 18-24)
+base architecture is [NVIDIA model](https://arxiv.org/abs/1604.07316)
 
-The model includes RELU layers to introduce nonlinearity (code line 20), and the data is normalized in the model using a Keras lambda layer (code line 18).
+<img src="./fig/nvidia-model.png" width="600">
 
-####2. Attempts to reduce overfitting in the model
+After trying experiments, I made the architecture more simple to reduce overfitting.
 
-The model contains dropout layers in order to reduce overfitting (model.py lines 21).
+the final architecure is the following:
 
-The model was trained and validated on different data sets to ensure that the model was not overfitting (code line 10-16). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
+| Layer         	|     Description	        		|
+|:---------------------:|:---------------------------------------------:|
+| Input         	| 160x320x3 RGB image   			|
+| Normalization     	| lambda x: x/127.5 - 1. , outputs 160x320x3 	|
+| Cropping		| discard top50pix bottom20px, outputs 90x320x3	|
+| Convolution 5x5     	| 2x2 stride, valid padding, ReLU, 24channel 	|
+| Convolution 5x5     	| 2x2 stride, valid padding, ReLU, 36channel	|
+| Convolution 5x5     	| 2x2 stride, valid padding, ReLU, 48channel	|
+| Convolution 3x3     	| 1x1 stride, valid padding, ReLU, 64channel	|
+| Convolution 3x3     	| 1x1 stride, valid padding, ReLU, 64channel	|
+| Fully connected	| outputs 100, ReLU				|
+| Fully connected	| outputs 50, ReLU				|
+| Fully connected	| outputs 10, ReLU				|
+| Fully connected	| outputs 1, tanh				|
+|			|						|
 
-####3. Model parameter tuning
+<img src="./fig/model_cnn.png" width="400">
 
-The model used an adam optimizer, so the learning rate was not tuned manually (model.py line 25).
+#### 2. attempts to reduce overfitting
 
-####4. Appropriate training data
+* I reduced 1 fully-connected layer from nvidia-model
+* cropping made the number of parameters smaller
+* data augumentation (horizontal flipping)
+* data augumentation (3 car mounted camera(left, center, right) and corrected ground truth angle)
 
-Training data was chosen to keep the vehicle driving on the road. I used a combination of center lane driving, recovering from the left and right sides of the road ...
+#### 3. parameters
 
-For details about how I created the training data, see the next section.
+* adam (learning rate = 0.0001)
+* batch size = 196
+* num_epochs = 10
+* correction value for 3 car mounted camera = 0.2(left), 0(center), -0.2(right)
 
-###Model Architecture and Training Strategy
+#### 4. training dataset
 
-####1. Solution Design Approach
+I have downloaded sample datasets from official Udacity's lecture page, 
+because collected dataset on my macbook-pro by using trackpad is not good. 
+(I am poor at driving in simulator)
 
-The overall strategy for deriving a model architecture was to ...
+I use data augumentation techinique:
+* horizontal flipping
+* 3 car mounted camera(left, center, right) and corrected ground truth angle
 
-My first step was to use a convolution neural network model similar to the ... I thought this model might be appropriate because ...
+#### more technique I used
 
-In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. I found that my first model had a low mean squared error on the training set but a high mean squared error on the validation set. This implied that the model was overfitting.
-
-To combat the overfitting, I modified the model so that ...
-
-Then I ...
-
-The final step was to run the simulator to see how well the car was driving around track one. There were a few spots where the vehicle fell off the track... to improve the driving behavior in these cases, I ....
+* train_test_split
+* shuffling dataset
+* data_generator (Keras's API)
 
 At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
 
-####2. Final Model Architecture
+#### training logs
 
-The final model architecture (model.py lines 18-24) consisted of a convolution neural network with the following layers and layer sizes ...
-
-Here is a visualization of the architecture (note: visualizing the architecture is optional according to the project rubric)
-
-![alt text][image1]
-
-####3. Creation of the Training Set & Training Process
-
-To capture good driving behavior, I first recorded two laps on track one using center lane driving. Here is an example image of center lane driving:
-
-![alt text][image2]
-
-I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to .... These images show what a recovery looks like starting from ... :
-
-![alt text][image3]
-![alt text][image4]
-![alt text][image5]
-
-Then I repeated this process on track two in order to get more data points.
-
-To augment the data sat, I also flipped images and angles thinking that this would ... For example, here is an image that has then been flipped:
-
-![alt text][image6]
-![alt text][image7]
-
-Etc ....
-
-After the collection process, I had X number of data points. I then preprocessed this data by ...
+<img src="./fig/log.png" width="400">
 
 
-I finally randomly shuffled the data set and put Y% of the data into a validation set.
-
-I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was Z as evidenced by ... I used an adam optimizer so that manually training the learning rate wasn't necessary.
