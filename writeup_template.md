@@ -9,16 +9,21 @@ The goals / steps of this project are the following:
 
 ### Submitted Files
 
+**Because I have trained model in keras==2.0.4 (not keras==1.2.1),
+pleas install keras==2.0.4 to run the following command**
+
+```
+$ pip install keras==2.0.4
+$ python drive.py model.h5
+$ pip install keras==1.2.1 # to back to original environment
+```
+
 * model.py containing the script to create and train the model
 * drive.py for driving the car in autonomous mode
 * model.h5 containing a trained convolution neural network
 * writeup_report.md or writeup_report.pdf summarizing the results
 
 Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing
-
-```
-python drive.py model.h5
-```
 
 ### Model Architecture and Training Strategy
 
@@ -66,8 +71,8 @@ the final architecure is the following:
 
 #### 4. training dataset
 
-I have downloaded sample datasets from official Udacity's lecture page, 
-because collected dataset on my macbook-pro by using trackpad is not good. 
+I have downloaded sample datasets from official Udacity's lecture page,
+because collected dataset on my macbook-pro by using trackpad is not good.
 (I am poor at driving in simulator)
 
 I use data augumentation techinique:
@@ -85,5 +90,3 @@ At the end of the process, the vehicle is able to drive autonomously around the 
 #### training logs
 
 <img src="./fig/log.png" width="400">
-
-
