@@ -18,7 +18,11 @@ from keras import __version__ as keras_version
 
 sio = socketio.Server()
 app = Flask(__name__)
-model = None
+
+model = model_from_yaml(open('models/net.yaml').read())
+model.load_weights("models/weight.h5")
+model.compile(loss='mse', optimizer='adam')
+
 prev_image_array = None
 
 
