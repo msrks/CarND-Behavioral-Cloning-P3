@@ -23,6 +23,9 @@ $ pip install keras==1.2.1 # to back to original environment
 * model.h5 containing a trained convolution neural network
 * writeup_report.md or writeup_report.pdf summarizing the results
 
+* data_generator.py for keras's fit_generator
+* yaml_to_h5.py for convert saved_weight.yaml to saved_weight.h5(==model.h5)
+
 Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing
 
 ### Model Architecture and Training Strategy
