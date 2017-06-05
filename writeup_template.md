@@ -1,5 +1,7 @@
 # Behavioral Cloning
 
+<img src="./fig/sample_dataset.png" width="1000">
+
 The goals / steps of this project are the following:
 * Use the simulator to collect data of good driving behavior
 * Build, a convolution neural network in Keras that predicts steering angles from images
@@ -81,6 +83,10 @@ because collected dataset on my macbook-pro by using trackpad is not good.
 I use data augumentation techinique:
 * horizontal flipping
 * 3 car mounted camera(left, center, right) and corrected ground truth angle
+
+images of the corrected dataset:
+
+<img src="./fig/sample_dataset.png" width="1000">
 
 #### more technique I used
 
